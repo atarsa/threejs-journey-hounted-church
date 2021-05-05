@@ -27,6 +27,49 @@ const axesHelper = new THREE.AxesHelper(5);
  */
 const textureLoader = new THREE.TextureLoader();
 
+const doorColorTexture = textureLoader.load('/textures/door/color.jpg');
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg');
+const doorAmbientOcclusionTexture = textureLoader.load(
+  '/textures/door/ambientOcclusion.jpg'
+);
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg');
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg');
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg');
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg');
+
+const bricksColorTexture = textureLoader.load('/textures/bricks/color.jpg');
+const bricksNormalTexture = textureLoader.load('/textures/bricks/normal.jpg');
+const bricksAmbientOclusionTexture = textureLoader.load(
+  '/textures/bricks/ambientOcclusion.jpg'
+);
+const bricksRoughnessTexture = textureLoader.load(
+  '/textures/bricks/roughness.jpg'
+);
+
+const grassColorTexture = textureLoader.load('/textures/grass/color.jpg');
+const grassNormalTexture = textureLoader.load('/textures/grass/normal.jpg');
+const grassAmbientOclusionTexture = textureLoader.load(
+  '/textures/grass/ambientOcclusion.jpg'
+);
+const grassRoughnessTexture = textureLoader.load(
+  '/textures/grass/roughness.jpg'
+);
+
+grassColorTexture.repeat.set(8, 8);
+grassNormalTexture.repeat.set(8, 8);
+grassAmbientOclusionTexture.repeat.set(8, 8);
+grassRoughnessTexture.repeat.set(8, 8);
+
+grassColorTexture.wrapT = THREE.RepeatWrapping;
+grassNormalTexture.wrapT = THREE.RepeatWrapping;
+grassAmbientOclusionTexture.wrapT = THREE.RepeatWrapping;
+grassRoughnessTexture.wrapT = THREE.RepeatWrapping;
+
+grassColorTexture.wrapS  = THREE.RepeatWrapping;
+grassNormalTexture.wrapS = THREE.RepeatWrapping;
+grassAmbientOclusionTexture.wrapS = THREE.RepeatWrapping;
+grassRoughnessTexture.wrapS = THREE.RepeatWrapping;
+
 /**
  * Church
  */
@@ -35,20 +78,35 @@ church.position.z = 3;
 scene.add(church);
 
 // Walls
+const brickMaterial = new THREE.MeshStandardMaterial({
+  map: bricksColorTexture,
+  aoMap: bricksAmbientOclusionTexture,
+  normalMap: bricksNormalTexture,
+  roughnessMap: bricksRoughnessTexture,
+});
 const walls1 = new THREE.Mesh(
   new THREE.BoxBufferGeometry(2.5, 7, 3),
-  new THREE.MeshStandardMaterial({ color: '#ac8e82' })
+  brickMaterial
 );
 walls1.position.y = 7 / 2;
-
+walls1.geometry.setAttribute(
+  'uv2',
+  new THREE.Float32BufferAttribute(walls1.geometry.attributes.uv.array, 2)
+);
+// important to make ambient oclussion map working!!
 const walls2 = new THREE.Mesh(
   new THREE.BoxBufferGeometry(7, 4, 5.5),
-  new THREE.MeshStandardMaterial({ color: '#ac8e82' })
+  brickMaterial
 );
 walls2.position.y = 4 / 2;
 // walls2.position.x = 2.5 / 2;
 walls2.position.z = -3.5;
 walls2.rotation.y = Math.PI * 0.5;
+
+walls2.geometry.setAttribute(
+  'uv2',
+  new THREE.Float32BufferAttribute(walls2.geometry.attributes.uv.array, 2)
+);
 church.add(walls1, walls2);
 
 // Roof
@@ -74,10 +132,25 @@ church.add(roof1, roof2);
 
 // Door
 const door = new THREE.Mesh(
-  new THREE.PlaneBufferGeometry(1.2, 3),
-  new THREE.MeshStandardMaterial({ color: '#aa7b7b' })
+  new THREE.PlaneBufferGeometry(2.2, 3, 10, 10),
+  new THREE.MeshStandardMaterial({
+    map: doorColorTexture,
+    transparent: true,
+    alphaMap: doorAlphaTexture,
+    aoMap: doorAmbientOcclusionTexture,
+    displacementMap: doorHeightTexture,
+    displacementScale: 0.1,
+    normalMap: doorNormalTexture,
+    metalnessMap: doorMetalnessTexture,
+    roughnessMap: doorRoughnessTexture,
+  })
 );
-door.position.y = 1;
+
+door.geometry.setAttribute(
+  'uv2',
+  new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
+); // important to make ambient oclussion map working!!
+door.position.y = 1.4;
 door.position.z = 1.51;
 
 church.add(door);
@@ -171,10 +244,22 @@ for (let i = 0; i < 50; i++) {
 // Floor
 const floor = new THREE.Mesh(
   new THREE.PlaneGeometry(30, 30),
-  new THREE.MeshStandardMaterial({ color: '#a9c388' })
+  new THREE.MeshStandardMaterial({
+    map: grassColorTexture,
+    aoMap: grassAmbientOclusionTexture,
+    normalMap: grassNormalTexture,
+    roughnessMap: grassRoughnessTexture,
+  })
 );
+
+floor.geometry.setAttribute(
+  'uv2',
+  new THREE.Float32BufferAttribute(floor.geometry.attributes.uv.array, 2)
+);
+
 floor.rotation.x = -Math.PI * 0.5;
 floor.position.y = 0;
+
 scene.add(floor);
 
 /**
@@ -247,7 +332,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor('#262837')
+renderer.setClearColor('#262837');
 
 /**
  * Animate
