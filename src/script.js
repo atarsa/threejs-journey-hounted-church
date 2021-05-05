@@ -16,8 +16,12 @@ const canvas = document.querySelector('canvas.webgl');
 // Scene
 const scene = new THREE.Scene();
 
+// Fog
+const fog = new THREE.Fog('#262837', 1, 20);
+scene.fog = fog;
+
 const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+// scene.add(axesHelper);
 /**
  * Textures
  */
@@ -110,7 +114,17 @@ for (let i = 0; i < windowsPositions.length; i++) {
   churchWindow.rotation.y = windowsYRotation[i];
   church.add(churchWindow);
 }
-
+// Lamp
+const lamp = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.15, 0.15, 0.3, 6),
+  new THREE.MeshBasicMaterial({
+    color: '#ff7d46',
+    opacity: 0.8,
+    transparent: true,
+  })
+);
+lamp.position.set(0, 3, 1.8);
+church.add(lamp);
 // Bushes
 const bushGeometry = new THREE.SphereBufferGeometry(1, 16, 16);
 const bushMaterial = new THREE.MeshStandardMaterial({ color: '#89c854' });
@@ -167,12 +181,12 @@ scene.add(floor);
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight('#ffffff', 0.5);
+const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12);
 gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001);
 scene.add(ambientLight);
 
 // Directional light
-const moonLight = new THREE.DirectionalLight('#ffffff', 0.5);
+const moonLight = new THREE.DirectionalLight('#b9d5ff', 0.12);
 moonLight.position.set(4, 5, -2);
 gui.add(moonLight, 'intensity').min(0).max(1).step(0.001);
 gui.add(moonLight.position, 'x').min(-5).max(5).step(0.001);
@@ -180,6 +194,10 @@ gui.add(moonLight.position, 'y').min(-5).max(5).step(0.001);
 gui.add(moonLight.position, 'z').min(-5).max(5).step(0.001);
 scene.add(moonLight);
 
+// Door light
+const doorLight = new THREE.PointLight('#ff7d46', 1, 7);
+doorLight.position.set(0, 3, 2.2);
+church.add(doorLight);
 /**
  * Sizes
  */
@@ -229,6 +247,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor('#262837')
 
 /**
  * Animate
