@@ -46,6 +46,20 @@ const bricksRoughnessTexture = textureLoader.load(
   '/textures/bricks/roughness.jpg'
 );
 
+const windowColorTexture = textureLoader.load('/textures/window/color.jpg');
+const windowAlphaTexture = textureLoader.load('/textures/window/alpha.jpg');
+const windowAmbientOcclusionTexture = textureLoader.load(
+  '/textures/window/ambientOcclusion.jpg'
+);
+const windowHeightTexture = textureLoader.load('/textures/window/height.png');
+const windowNormalTexture = textureLoader.load('/textures/window/normal.jpg');
+const windowRoughnessTexture = textureLoader.load(
+  '/textures/window/roughness.jpg'
+);
+const windowMetalnessTexture = textureLoader.load(
+  '/textures/window/metallic.jpg'
+);
+
 const grassColorTexture = textureLoader.load('/textures/grass/color.jpg');
 const grassNormalTexture = textureLoader.load('/textures/grass/normal.jpg');
 const grassAmbientOclusionTexture = textureLoader.load(
@@ -141,8 +155,8 @@ const door = new THREE.Mesh(
     displacementMap: doorHeightTexture,
     displacementScale: 0.1,
     normalMap: doorNormalTexture,
-    metalnessMap: doorMetalnessTexture,
-    roughnessMap: doorRoughnessTexture,
+    // metalnessMap: doorMetalnessTexture,
+    // roughnessMap: doorRoughnessTexture,
   })
 );
 
@@ -156,19 +170,17 @@ door.position.z = 1.51;
 church.add(door);
 
 // Windows
-// order: front window, window side east 1, window side east 2, window side west 3, window side west 1, window side west 2, window side west 3,
+// order: window side east 1, window side east 2, window side west 3, window side west 1, window side west 2, window side west 3,
 const windowsPositions = [
-  [0, 5.5, 1.51],
-  [2.76, 2.5, -2],
-  [2.76, 2.5, -4],
-  [2.76, 2.5, -6],
-  [-2.76, 2.5, -2],
-  [-2.76, 2.5, -4],
-  [-2.76, 2.5, -6],
+  [2.76, 2.5, -1.5],
+  [2.76, 2.5, -3.5],
+  [2.76, 2.5, -5.5],
+  [-2.76, 2.5, -1.5],
+  [-2.76, 2.5, -3.5],
+  [-2.76, 2.5, -5.5],
 ];
 
 const windowsYRotation = [
-  0,
   Math.PI * 0.5,
   Math.PI * 0.5,
   Math.PI * 0.5,
@@ -176,17 +188,41 @@ const windowsYRotation = [
   -Math.PI * 0.5,
   -Math.PI * 0.5,
 ];
-const windowGeometry = new THREE.PlaneBufferGeometry(0.5, 1);
-const windowMaterial = new THREE.MeshStandardMaterial({ color: '#152238' });
+const windowGeometry = new THREE.PlaneBufferGeometry(1, 2);
+const windowMaterial = new THREE.MeshStandardMaterial({
+  // map: windowColorTexture,
+  color: '#152238',
+  transparent: true,
+  alphaMap: windowAlphaTexture,
+  normalMap: windowNormalTexture,
+  aoMap: windowAmbientOcclusionTexture,
+  roughnessMap: windowRoughnessTexture,
+  metalnessMap: windowMetalnessTexture,
+  heightMap: windowHeightTexture,
+});
 
 for (let i = 0; i < windowsPositions.length; i++) {
   const churchWindow = new THREE.Mesh(windowGeometry, windowMaterial);
-
+  churchWindow.geometry.setAttribute(
+    'uv2',
+    new THREE.Float32BufferAttribute(
+      churchWindow.geometry.attributes.uv.array,
+      2
+    )
+  );
   churchWindow.position.set(...windowsPositions[i]); // spread values from the array
 
   churchWindow.rotation.y = windowsYRotation[i];
   church.add(churchWindow);
 }
+
+const belfry = new THREE.Mesh(
+  new THREE.BoxBufferGeometry(0.75, 1.25, 3.1),
+  new THREE.MeshStandardMaterial({ color: '#262837' })
+);
+belfry.position.set(0, 6, 0.01);
+church.add(belfry);
+
 // Lamp
 const lamp = new THREE.Mesh(
   new THREE.CylinderGeometry(0.15, 0.15, 0.3, 6),
@@ -196,7 +232,7 @@ const lamp = new THREE.Mesh(
     transparent: true,
   })
 );
-lamp.position.set(0, 3, 1.8);
+lamp.position.set(0, 3, 1.6);
 church.add(lamp);
 // Bushes
 const bushGeometry = new THREE.SphereBufferGeometry(1, 16, 16);
@@ -244,7 +280,7 @@ for (let i = 0; i < 50; i++) {
 
 // Floor
 const floor = new THREE.Mesh(
-  new THREE.PlaneGeometry(30, 30),
+  new THREE.PlaneGeometry(60, 40),
   new THREE.MeshStandardMaterial({
     map: grassColorTexture,
     aoMap: grassAmbientOclusionTexture,
@@ -351,7 +387,7 @@ renderer.setClearColor('#262837');
  * Shadows
  */
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 moonLight.castShadow = true;
 doorLight.castShadow = true;
