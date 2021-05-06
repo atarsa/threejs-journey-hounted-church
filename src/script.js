@@ -198,7 +198,7 @@ const windowMaterial = new THREE.MeshStandardMaterial({
   aoMap: windowAmbientOcclusionTexture,
   roughnessMap: windowRoughnessTexture,
   metalnessMap: windowMetalnessTexture,
-  heightMap: windowHeightTexture,
+  displacementMap: windowHeightTexture,
 });
 
 for (let i = 0; i < windowsPositions.length; i++) {
