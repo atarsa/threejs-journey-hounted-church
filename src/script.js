@@ -304,16 +304,16 @@ scene.add(floor);
  */
 // Ambient light
 const ambientLight = new THREE.AmbientLight('#b9d5ff', 0.12);
-gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001);
+// gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001);
 scene.add(ambientLight);
 
 // Directional light
 const moonLight = new THREE.DirectionalLight('#b9d5ff', 0.12);
 moonLight.position.set(4, 5, -2);
-gui.add(moonLight, 'intensity').min(0).max(1).step(0.001);
-gui.add(moonLight.position, 'x').min(-5).max(5).step(0.001);
-gui.add(moonLight.position, 'y').min(-5).max(5).step(0.001);
-gui.add(moonLight.position, 'z').min(-5).max(5).step(0.001);
+// gui.add(moonLight, 'intensity').min(0).max(1).step(0.001);
+// gui.add(moonLight.position, 'x').min(-5).max(5).step(0.001);
+// gui.add(moonLight.position, 'y').min(-5).max(5).step(0.001);
+// gui.add(moonLight.position, 'z').min(-5).max(5).step(0.001);
 scene.add(moonLight);
 
 // Door light
@@ -323,13 +323,12 @@ church.add(doorLight);
 
 // walls light
 const leftWallLight = new THREE.PointLight('#ff7d46', 0.5, 7);
-leftWallLight.position.set(-4, 4,-3);
+leftWallLight.position.set(-4, 4, -3);
 church.add(leftWallLight);
 
 const rightWallLight = new THREE.PointLight('#ff7d46', 0.5, 7);
-rightWallLight.position.set(4, 4,-3);
+rightWallLight.position.set(4, 4, -3);
 church.add(rightWallLight);
-
 
 /**
  * Ghosts
@@ -374,14 +373,21 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
-camera.position.x = 4;
-camera.position.y = 2;
-camera.position.z = 12;
+camera.position.set(4, 5, 17);
+
 scene.add(camera);
 
+const cameraFolder = gui.addFolder('Camera');
+cameraFolder.add(camera.position, 'x').min(0).max(15).step(1);
+cameraFolder.add(camera.position, 'y').min(0).max(15).step(1);
+cameraFolder.add(camera.position, 'z').min(0).max(25).step(1);
+cameraFolder.open();
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+controls.minPolarAngle = 0
+controls.maxPolarAngle = Math.PI/2 ;
+
 
 /**
  * Renderer
