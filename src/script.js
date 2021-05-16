@@ -254,7 +254,7 @@ const bush4 = new THREE.Mesh(bushGeometry, bushMaterial);
 bush4.scale.set(0.15, 0.15, 0.15);
 bush4.position.set(-1, 0.05, 2.6);
 
-church.add(bush1, bush2, bush3, bush4);
+// church.add(bush1, bush2, bush3, bush4);
 
 // Graves
 const graves = new THREE.Group();
@@ -320,6 +320,16 @@ scene.add(moonLight);
 const doorLight = new THREE.PointLight('#ff7d46', 1, 7);
 doorLight.position.set(0, 3, 2.2);
 church.add(doorLight);
+
+// walls light
+const leftWallLight = new THREE.PointLight('#ff7d46', 0.5, 7);
+leftWallLight.position.set(-4, 4,-3);
+church.add(leftWallLight);
+
+const rightWallLight = new THREE.PointLight('#ff7d46', 0.5, 7);
+rightWallLight.position.set(4, 4,-3);
+church.add(rightWallLight);
+
 
 /**
  * Ghosts
